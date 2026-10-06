@@ -61,7 +61,7 @@ int main(void) {
     task_register("LoggerTask", 500, 2, task_2_handler); // Runs 2 time
 
     uint64_t debut = get_time_ms();
-
+    int task_runing = task_count;
     while (true) {
 
         for(int i = 0 ; i < task_count ; i++)
@@ -75,9 +75,18 @@ int main(void) {
                 printf("(lancement task) task : %s, nb run : %d, dernier appel : %d \n",tasks[i].name,tasks[i].run_count,delta_time);
                 tasks[i].func();
                 tasks[i].last_run_ms = now;
+                if(tasks[i].run_count==tasks[i].max_runs)
+                {
+                    printf("task %s finished\n",tasks[i].name);
+                    task_runing--;
+                }
             }
         }
 
+        if(task_runing==0)
+        {
+            return 0;
+        }
     }
 
     return 0;
