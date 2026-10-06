@@ -56,7 +56,7 @@ void task_2_handler(void) {
 
 int main(void) {
 
-    printf("strat\n");
+    printf("start\n");
     task_register("SensorTask", 100, 12, task_1_handler); // Runs 12 times
     task_register("LoggerTask", 500, 2, task_2_handler); // Runs 2 time
 
