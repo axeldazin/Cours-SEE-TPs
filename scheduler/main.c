@@ -23,7 +23,10 @@ uint64_t get_time_ms(void) {
 
     struct timespec now;
 
-    clock_gettime(CLOCK_MONOTONIC, &now);
+    if (clock_gettime(CLOCK_MONOTONIC, &now) != 0) {
+        perror("clock_gettime failed");
+        return 0;
+    }
 
     return (uint64_t)now.tv_sec * 1000
          + (uint64_t)now.tv_nsec / 1000000;
@@ -36,7 +39,7 @@ void task_register(const char *name, uint32_t period_ms, uint32_t max_runs, void
 
     tasks[task_count].name=name;
     tasks[task_count].period_ms=period_ms;
-    tasks[task_count].last_run_ms=get_time_ms();
+    tasks[task_count].last_run_ms=0;
     tasks[task_count].max_runs=max_runs;
     tasks[task_count].run_count=0;
     tasks[task_count].func=func;
