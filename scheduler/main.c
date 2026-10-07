@@ -3,7 +3,6 @@
 #include <stdbool.h>
 #include <time.h>
 #include <unistd.h>
-#include <inttypes.h>
 
 #define MAX_TASKS 10
 
@@ -34,7 +33,7 @@ uint64_t get_time_ms(void) {
 
 void task_register(const char *name, uint32_t period_ms, uint32_t max_runs, void (*func)(void)) {
 
-    if(task_count==10)
+    if(task_count==MAX_TASKS)
      return;
 
     tasks[task_count].name=name;
@@ -63,18 +62,18 @@ int main(void) {
     task_register("SensorTask", 100, 12, task_1_handler); // Runs 12 times
     task_register("LoggerTask", 500, 2, task_2_handler); // Runs 2 time
 
-    uint64_t debut = get_time_ms();
     int task_runing = task_count;
+    
     while (true) {
 
         for(int i = 0 ; i < task_count ; i++)
         {
             uint64_t now = get_time_ms();
-
-            if (now - tasks[i].last_run_ms >= tasks[i].period_ms &&
+            
+            uint32_t delta_time = now - tasks[i].last_run_ms;
+            if (delta_time >= tasks[i].period_ms &&
                 tasks[i].run_count < tasks[i].max_runs) {
                 tasks[i].run_count++;
-                uint32_t delta_time = now - tasks[i].last_run_ms;
                 printf("(lancement task) task : %s, nb run : %d, dernier appel : %d \n",tasks[i].name,tasks[i].run_count,delta_time);
                 tasks[i].func();
                 tasks[i].last_run_ms = now;
